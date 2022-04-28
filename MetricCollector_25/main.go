@@ -8,6 +8,10 @@ type Metrics struct {
 	responseTimes map[string][]int64
 	timestamps    map[string][]int64
 }
+
+func NewMetrics(responseTimes map[string][]int64, timestamps map[string][]int64) *Metrics {
+	return &Metrics{responseTimes: responseTimes, timestamps: timestamps}
+}
 type MetricsInterface interface {
 	recordResponseTime(apiName string, responseTs int64) error
 	recordTimestamp(apiName string, responseTs int64) error
@@ -17,10 +21,16 @@ type MetricsInterface interface {
 }
 
 func (m *Metrics) recordResponseTime(apiName string, responseTs int64) error {
-	m.timestamps[apiName] = append(m.timestamps[apiName], responseTs)
+	if m.responseTimes == nil{
+		m.responseTimes = map[string][]int64{}
+	}
+	m.responseTimes[apiName] = append(m.responseTimes[apiName], responseTs)
 	return nil
 }
 func (m *Metrics) recordTimestamp(apiName string, timestamp int64) error {
+	if m.timestamps == nil{
+		m.timestamps = map[string][]int64{}
+	}
 	m.timestamps[apiName] = append(m.timestamps[apiName], timestamp)
 	return nil
 }
@@ -56,9 +66,9 @@ type UserController struct {
 	metricsInterface MetricsInterface
 }
 
-func NewUserController() UserInterface {
+func NewUserController(metricsInterface MetricsInterface) UserInterface {
 	return &UserController{
-		metricsInterface: &Metrics{},
+		metricsInterface: metricsInterface,
 	}
 }
 
@@ -83,7 +93,7 @@ func (u *UserController) login(account, password string) *User {
 }
 
 func main() {
-	userController := NewUserController()
+	userController := NewUserController(NewMetrics(map[string][]int64{}, map[string][]int64{}))
 	userController.register(*NewUser("zjk","123456",1/*1 man 2 woman 3 unknown*/,"白京"))
 	userController.login("zjk", "123456")
 }
