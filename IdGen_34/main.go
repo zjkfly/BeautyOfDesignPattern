@@ -21,20 +21,16 @@ func NewIdGenerator(ctx context.Context) IdGeneratorService {
 	return &IdGenerator{ctx: ctx}
 }
 
-// GetRandomString copy from https://www.csdn.net/tags/OtTaUg4sOTYzOTctYmxvZwO0O0OO0O0O.html
-func GetRandomString(n int) string {
+func (ig *IdGenerator) generate() (string, error) {
+	// 简单写
 	str := "0123456789abcdefghijklmnopqrstuvwxyz"
 	bytes := []byte(str)
 	var result []byte
-	for i := 0; i < n; i++ {
+	for i := 0; i < 6; i++ {
 		result = append(result, bytes[rand.Intn(len(bytes))])
 	}
-	return string(result)
-}
 
-func (ig *IdGenerator) generate() (string, error) {
-	// 简单写
-	id := fmt.Sprintf(idTpl, time.Now().Unix(), GetRandomString(6))
+	id := fmt.Sprintf(idTpl, time.Now().Unix(), result)
 	ig.ctx = context.WithValue(ig.ctx, "id", id)
 	return id, nil
 }
