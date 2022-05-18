@@ -16,7 +16,7 @@ const (
 )
 
 type IdGenerator interface {
-	generate() (string, error)
+	Generate() (string, error)
 }
 type CtxTraceIdGenerator interface {
 	IdGenerator
@@ -35,6 +35,7 @@ func NewRandomIdGenerator(ctx context.Context) CtxTraceIdGenerator {
 	return &RandomIdGenerator{ctx: ctx}
 }
 
+// GetRandomString wants n>=0, return "" if illegal
 // GetRandomString copy from https://www.csdn.net/tags/OtTaUg4sOTYzOTctYmxvZwO0O0OO0O0O.html
 func GetRandomString(n int) string {
 	str := "0123456789abcdefghijklmnopqrstuvwxyz"
@@ -46,7 +47,7 @@ func GetRandomString(n int) string {
 	return string(result)
 }
 
-func (ig *RandomIdGenerator) generate() (string, error) {
+func (ig *RandomIdGenerator) Generate() (string, error) {
 	// 简单写
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -65,5 +66,5 @@ func (ig *RandomIdGenerator) generate() (string, error) {
 func main() {
 	ctx := context.TODO()
 	idGen := NewRandomIdGenerator(ctx)
-	idGen.generate()
+	idGen.Generate()
 }
