@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/rand"
 	"os"
@@ -50,6 +51,10 @@ func (ig *RandomIdGenerator) generate() (string, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
 		return "", err
+	}
+
+	if len(hostname) == 0{
+		return "", errors.New("hostname is empty")
 	}
 
 	id := fmt.Sprintf(idTpl, hostname, time.Now().Unix(), GetRandomString(6))

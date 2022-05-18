@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"os"
 	"time"
 )
 
-const idTpl = "%d-%s"
+const idTpl = "%s-%d-%s"
 
 type IdGeneratorService interface {
 	generate() (string, error)
@@ -30,7 +31,12 @@ func (ig *IdGenerator) generate() (string, error) {
 		result = append(result, bytes[rand.Intn(len(bytes))])
 	}
 
-	id := fmt.Sprintf(idTpl, time.Now().Unix(), result)
+	hostname, err := os.Hostname()
+	if err != nil {
+		return "", err
+	}
+
+	id := fmt.Sprintf(idTpl, hostname, time.Now().Unix(), result)
 	ig.ctx = context.WithValue(ig.ctx, "id", id)
 	return id, nil
 }
