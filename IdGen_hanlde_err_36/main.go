@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/rand"
 	"os"
@@ -34,6 +35,7 @@ func NewRandomIdGenerator(ctx context.Context) CtxTraceIdGenerator {
 	return &RandomIdGenerator{ctx: ctx}
 }
 
+// GetRandomString wants n>=0, return "" if illegal
 // GetRandomString copy from https://www.csdn.net/tags/OtTaUg4sOTYzOTctYmxvZwO0O0OO0O0O.html
 func GetRandomString(n int) string {
 	str := "0123456789abcdefghijklmnopqrstuvwxyz"
@@ -50,6 +52,10 @@ func (ig *RandomIdGenerator) Generate() (string, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
 		return "", err
+	}
+
+	if len(hostname) == 0{
+		return "", errors.New("hostname is empty")
 	}
 
 	id := fmt.Sprintf(idTpl, hostname, time.Now().Unix(), GetRandomString(6))
