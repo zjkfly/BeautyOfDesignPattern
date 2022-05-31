@@ -3,39 +3,60 @@ package FactoryDesignPattern_44
 import "errors"
 
 /*
-⼀般情况下，⼯⼚模式分为三种更加细分的类型：简单⼯⼚、⼯⼚⽅法和抽象⼯⼚。
-不过， 在GoF 的《设计模式》⼀书中，它将简单⼯⼚模式看作是⼯⼚⽅法模式的⼀种特例，
-所以 ⼯⼚模式只被分成了⼯⼚⽅法和抽象⼯⼚两类。实际上，前⾯⼀种分类⽅法更加常⻅，
-所 以，在今天的讲解中，我们沿⽤第⼀种分类⽅法。
 
-简单⼯⼚模式的代码实现中，有多处 if分⽀判断逻辑，违背开闭原则，但权衡扩展性和可读性。
-这样的代码实现在⼤多数情况下（⽐如，不需要频繁地添加 parser，也没有太多的parser）是没有问题的。
+抽象工厂
 
-
-⼯⼚模式需要额外创建诸多 Factory 类，也会增加代码的复杂性，⽽且，每个 Factory类只是做简单的new 操作，
-功能⾮常单 薄（只有⼀⾏代码），也没必要设计成独⽴的类，所以，在这个应⽤场景下，简单⼯⼚模式简单好⽤，
-⽐⼯⼚⽅法模式更加合适
-
+Q: 过多的类 也会让系统难维护。这个问题该怎么解决呢？
+A: 抽象⼯⼚就是针对这种⾮常特殊的场景⽽诞⽣的。
+   我们可以让⼀个⼯⼚负责创建多个不同类 型的对象（IRuleConﬁgParser、ISystemConﬁgParser 等）
 */
 
-type IParse interface {
+type IRuleConfigParser interface {
+	parse() RuleConfig
+}
+type ISystemConfigParser interface {
 	parse() RuleConfig
 }
 type JsonRuleConfigParser struct {
 }
+type JsonSystemConfigParser struct {
+}
 
-func NewJsonRuleConfigParser() IParse {
+type IConfigParserFactory interface {
+	createRuleParser() IRuleConfigParser
+	createSystemParser() ISystemConfigParser
+}
+
+type JsonConfigParserFactory struct {
+}
+
+func (j *JsonConfigParserFactory) createRuleParser() IRuleConfigParser {
+	return NewJsonRuleConfigParser()
+}
+func (j *JsonConfigParserFactory) createSystemParser() ISystemConfigParser {
+	return NewJsonSystemConfigParser()
+}
+
+func NewJsonRuleConfigParser() IRuleConfigParser {
 	return &JsonRuleConfigParser{}
+}
+
+func NewJsonSystemConfigParser() ISystemConfigParser {
+	return &JsonSystemConfigParser{}
 }
 
 func (j *JsonRuleConfigParser) parse() RuleConfig {
 	panic("implement me")
 }
 
+func (j *JsonSystemConfigParser) parse() RuleConfig {
+	panic("implement me")
+}
+
 type XmlRuleConfigParser struct {
 }
 
-func NewXmlRuleConfigParser() IParse {
+func NewXmlRuleConfigParser() IRuleConfigParser {
 	return &XmlRuleConfigParser{}
 }
 
@@ -46,7 +67,7 @@ func (x *XmlRuleConfigParser) parse() RuleConfig {
 type YamlRuleConfigParser struct {
 }
 
-func NewYamlRuleConfigParser() IParse {
+func NewYamlRuleConfigParser() IRuleConfigParser {
 	return &YamlRuleConfigParser{}
 }
 
@@ -57,7 +78,7 @@ func (y *YamlRuleConfigParser) parse() RuleConfig {
 type PropertiesRuleConfigParser struct {
 }
 
-func NewPropertiesRuleConfigParser() IParse {
+func NewPropertiesRuleConfigParser() IRuleConfigParser {
 	return &PropertiesRuleConfigParser{}
 }
 
@@ -88,12 +109,12 @@ func getFileExtension(filePath string) string {
 }
 
 type RuleConfigParserFactory struct {
-	cachedParsers map[string]IParse
+	cachedParsers map[string]IRuleConfigParser
 }
 
 func NewRuleConfigParserFactory() *RuleConfigParserFactory {
 	return &RuleConfigParserFactory{
-		cachedParsers: map[string]IParse{
+		cachedParsers: map[string]IRuleConfigParser{
 			"json":       NewJsonRuleConfigParser(),
 			"xml":        NewXmlRuleConfigParser(),
 			"yaml":       NewYamlRuleConfigParser(),
@@ -101,6 +122,6 @@ func NewRuleConfigParserFactory() *RuleConfigParserFactory {
 		},
 	}
 }
-func (r *RuleConfigParserFactory) createParser(configFmt string) IParse {
+func (r *RuleConfigParserFactory) createParser(configFmt string) IRuleConfigParser {
 	return r.cachedParsers[configFmt]
 }
