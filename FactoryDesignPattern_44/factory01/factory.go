@@ -2,13 +2,13 @@ package FactoryDesignPattern_44
 
 import "errors"
 
-type ParseInterface interface {
+type IParse interface {
 	parse() RuleConfig
 }
 type JsonRuleConfigParser struct {
 }
 
-func NewJsonRuleConfigParser() ParseInterface {
+func NewJsonRuleConfigParser() IParse {
 	return &JsonRuleConfigParser{}
 }
 
@@ -19,7 +19,7 @@ func (j *JsonRuleConfigParser) parse() RuleConfig {
 type XmlRuleConfigParser struct {
 }
 
-func NewXmlRuleConfigParser() ParseInterface {
+func NewXmlRuleConfigParser() IParse {
 	return &XmlRuleConfigParser{}
 }
 
@@ -30,7 +30,7 @@ func (x *XmlRuleConfigParser) parse() RuleConfig {
 type YamlRuleConfigParser struct {
 }
 
-func NewYamlRuleConfigParser() ParseInterface {
+func NewYamlRuleConfigParser() IParse {
 	return &YamlRuleConfigParser{}
 }
 
@@ -41,7 +41,7 @@ func (y *YamlRuleConfigParser) parse() RuleConfig {
 type PropertiesRuleConfigParser struct {
 }
 
-func NewPropertiesRuleConfigParser() ParseInterface {
+func NewPropertiesRuleConfigParser() IParse {
 	return &PropertiesRuleConfigParser{}
 }
 
@@ -78,7 +78,7 @@ type RuleConfigParserFactory struct {
 func NewRuleConfigParserFactory() *RuleConfigParserFactory {
 	return &RuleConfigParserFactory{}
 }
-func (r *RuleConfigParserFactory) createParser(configFmt string) ParseInterface {
+func (r *RuleConfigParserFactory) createParser(configFmt string) IParse {
 	switch configFmt {
 	case "json":
 		return NewJsonRuleConfigParser()
