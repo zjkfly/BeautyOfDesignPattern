@@ -39,7 +39,7 @@ type XMLAdapterLoader struct {
 }
 
 func (X *XMLAdapterLoader) Load(filePath string) error {
-	X.XMLLoader.Parse(filePath)
+	_ = X.XMLLoader.Parse(filePath)
 	return nil
 }
 
@@ -51,7 +51,7 @@ type JsonAdapterLoader struct {
 }
 
 func (j *JsonAdapterLoader) Load(filePath string) error {
-	j.JsonLoader.DataLoader(filePath)
+	_ = j.JsonLoader.DataLoader(filePath)
 	return nil
 }
 
